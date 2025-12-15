@@ -1,3 +1,4 @@
+# docker build -f Dockerfile.rhel8 -t diskann:latest-rhel8 .
 # Rocky Linux 8 provides glibc 2.28 compatibility (RHEL 8 compatible)
 FROM rockylinux:8
 

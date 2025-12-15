@@ -20,8 +20,24 @@ RUN dnf groupinstall -y "Development Tools" && \
     libunwind-devel \
     clang-tools-extra \
     boost-devel \
-    python38 \
-    python38-devel
+    openssl-devel \
+    bzip2-devel \
+    libffi-devel \
+    zlib-devel \
+    wget
+
+# Install Python 3.11 from source
+RUN cd /tmp && \
+    wget https://www.python.org/ftp/python/3.11.10/Python-3.11.10.tgz && \
+    tar xzf Python-3.11.10.tgz && \
+    cd Python-3.11.10 && \
+    ./configure --enable-optimizations --with-ensurepip=install && \
+    make -j$(nproc) && \
+    make altinstall && \
+    cd / && \
+    rm -rf /tmp/Python-3.11.10* && \
+    ln -sf /usr/local/bin/python3.11 /usr/local/bin/python3 && \
+    ln -sf /usr/local/bin/pip3.11 /usr/local/bin/pip3
 
 # Install Intel MKL
 RUN dnf install -y yum-utils && \
@@ -30,11 +46,11 @@ RUN dnf install -y yum-utils && \
     dnf install -y intel-mkl-2020.4-912
 
 # Build and install cpprestsdk from source (not available in standard RHEL 8 repos)
-RUN dnf install -y openssl-devel && \
-    cd /tmp && \
+RUN cd /tmp && \
     git clone https://github.com/microsoft/cpprestsdk.git && \
     cd cpprestsdk && \
     git checkout 2.10.18 && \
+    git submodule update --init && \
     mkdir build && \
     cd build && \
     cmake .. -DCMAKE_BUILD_TYPE=Release -DBUILD_TESTS=OFF -DBUILD_SAMPLES=OFF && \
@@ -52,4 +68,4 @@ RUN cmake -S . -B build -DCMAKE_BUILD_TYPE=Release
 RUN cmake --build build -- -j$(nproc)
 
 # Set library path for Intel MKL
-ENV LD_LIBRARY_PATH=/opt/intel/mkl/lib/intel64:$LD_LIBRARY_PATH
+ENV LD_LIBRARY_PATH=/opt/intel/mkl/lib/intel64:${LD_LIBRARY_PATH}

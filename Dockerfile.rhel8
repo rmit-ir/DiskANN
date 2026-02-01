@@ -67,5 +67,5 @@ RUN mkdir build
 RUN cmake -S . -B build -DCMAKE_BUILD_TYPE=Release
 RUN cmake --build build -- -j$(nproc)
 
-# Set library path for Intel MKL
-ENV LD_LIBRARY_PATH=/opt/intel/mkl/lib/intel64:${LD_LIBRARY_PATH}
+# # Set library path for Intel MKL
+# ENV LD_LIBRARY_PATH=/opt/intel/mkl/lib/intel64:${LD_LIBRARY_PATH}
